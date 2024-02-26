@@ -5,14 +5,14 @@ import { NodeContext, useAction } from 'react-flow-builder'
 
 const BranchNode = () => {
   const node = useContext(NodeContext)
-  const { removeNode } = useAction()
+  const { removeNode, addNode } = useAction()
 
   //State
   const [isExpand, setIsExpand] = useState(false)
   return (
     <Paper
       sx={{
-        width: 200,
+        width: 350,
         p: 2,
         boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
         cursor: 'pointer'
@@ -24,7 +24,22 @@ const BranchNode = () => {
         <Typography noWrap fontWeight={600} color='grey.900' maxWidth={220}>
           {node.name}
         </Typography>
-        <Button onClick={() => removeNode(node)}>Remove</Button>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation()
+            removeNode()
+          }}
+        >
+          Remove
+        </Button>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation()
+            addNode('condition')
+          }}
+        >
+          Add branch
+        </Button>
       </Stack>
       {isExpand && (
         <Stack justifyContent={'center'} alignItems={'center'} height={200}>

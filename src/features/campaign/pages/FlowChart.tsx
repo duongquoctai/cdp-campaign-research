@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react'
-import FlowBuilder, { INode, IRegisterNode, NodeContext } from 'react-flow-builder'
+import { useState } from 'react'
+import FlowBuilder, { INode, IRegisterNode } from 'react-flow-builder'
 import BranchNode from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
+import ConditionNode from '../components/CustomNodes/ConditionNode'
 import { StartEndNode } from '../components/CustomNodes/StartEndNode'
 import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
@@ -32,18 +33,18 @@ import PopoverComponent from '../components/PopoverComponent'
 //   )
 // }
 
-const ConditionNodeDisplay: React.FC = () => {
-  const node = useContext(NodeContext)
-  return (
-    <div
-      className={`condition-node ${
-        node.configuring ? 'node-configuring' : ''
-      } ${node.validateStatusError ? 'node-status-error' : ''}`}
-    >
-      {node.data ? node.data.name : node.name}
-    </div>
-  )
-}
+// const ConditionNodeDisplay: React.FC = () => {
+//   const node = useContext(NodeContext)
+//   return (
+//     <div
+//       className={`condition-node ${
+//         node.configuring ? 'node-configuring' : ''
+//       } ${node.validateStatusError ? 'node-status-error' : ''}`}
+//     >
+//       {node.data ? node.data.name : node.name}
+//     </div>
+//   )
+// }
 
 const registerNodes: IRegisterNode[] = [
   {
@@ -69,7 +70,7 @@ const registerNodes: IRegisterNode[] = [
   {
     type: 'condition',
     name: 'Condition Node',
-    displayComponent: ConditionNodeDisplay,
+    displayComponent: ConditionNode,
     addableComponent: ModalAddNode
   },
   {
@@ -82,7 +83,26 @@ const registerNodes: IRegisterNode[] = [
 ]
 
 const NodeForm = () => {
-  const [nodes, setNodes] = useState<INode[]>([])
+  const [nodes, setNodes] = useState<INode[]>([
+    {
+      id: 'node-0d9d4733-e48c-41fd-a41f-d93cc4718d97',
+      type: 'start',
+      name: 'start'
+    },
+    {
+      id: 'node-972401ca-c4db-4268-8780-5607876d8372',
+      type: 'channelNode',
+      name: 'test',
+      data: {
+        test: 111
+      }
+    },
+    {
+      id: 'node-b106675a-5148-4a2e-aa86-8e06abd692d1',
+      type: 'end',
+      name: 'end'
+    }
+  ])
 
   const handleChange = (nodes: INode[]) => {
     console.log('nodes change', nodes)
