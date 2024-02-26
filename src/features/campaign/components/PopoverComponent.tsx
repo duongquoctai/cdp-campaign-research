@@ -28,7 +28,11 @@ const PopoverComponent = (props: IPopoverComponent) => {
         }}
         sx={{
           padding: '0',
-          outline: 'none !important'
+          outline: 'none !important',
+          borderRadius: '4px',
+          boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
+          width: '24px',
+          height: '24px'
         }}
       >
         {children}
@@ -41,6 +45,9 @@ const PopoverComponent = (props: IPopoverComponent) => {
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'
+        }}
+        sx={{
+          ml: 1
         }}
       >
         {content}

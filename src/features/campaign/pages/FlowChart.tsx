@@ -1,29 +1,36 @@
-import React, { useState, useContext } from 'react'
-import FlowBuilder, { NodeContext, INode, IRegisterNode } from 'react-flow-builder'
+import React, { useContext, useState } from 'react'
+import FlowBuilder, { INode, IRegisterNode, NodeContext } from 'react-flow-builder'
+import BranchNode from '../components/CustomNodes/BranchNode'
+import ChannelNode from '../components/CustomNodes/ChannelNode'
+import { StartEndNode } from '../components/CustomNodes/StartEndNode'
+import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
 
-const StartNodeDisplay: React.FC = () => {
-  const node = useContext(NodeContext)
-  return <div className='start-node'>{node.name}</div>
-}
+// const StartNodeDisplay: React.FC = () => {
+//   const node = useContext(NodeContext)
+//   return <div className='start-node'>{node.name}</div>
+// }
 
-const EndNodeDisplay: React.FC = () => {
-  const node = useContext(NodeContext)
-  return <div className='end-node'>{node.name}</div>
-}
+// const EndNodeDisplay: React.FC = () => {
+//   const node = useContext(NodeContext)
+//   return <div className='end-node'>{node.name}</div>
+// }
 
-const NodeDisplay: React.FC = () => {
-  const node = useContext(NodeContext)
-  return (
-    <div
-      className={`other-node ${node.configuring ? 'node-configuring' : ''} ${
-        node.validateStatusError ? 'node-status-error' : ''
-      }`}
-    >
-      {node.data ? node.data.name : node.name}
-    </div>
-  )
-}
+// const NodeDisplay: React.FC = () => {
+//   const node = useContext(NodeContext)
+//   const { removeNode } = useAction()
+
+//   return (
+//     <div
+//       className={`other-node ${node.configuring ? 'node-configuring' : ''} ${
+//         node.validateStatusError ? 'node-status-error' : ''
+//       }`}
+//     >
+//       {node.data ? node.data.name : node.name}
+//       <Button onClick={() => removeNode(node)}>remove</Button>
+//     </div>
+//   )
+// }
 
 const ConditionNodeDisplay: React.FC = () => {
   const node = useContext(NodeContext)
@@ -41,31 +48,36 @@ const ConditionNodeDisplay: React.FC = () => {
 const registerNodes: IRegisterNode[] = [
   {
     type: 'start',
-    name: 'Start Node',
-    displayComponent: StartNodeDisplay,
-    isStart: true
+    name: 'Start',
+    displayComponent: StartEndNode,
+    isStart: true,
+    addableComponent: ModalAddNode
   },
   {
     type: 'end',
-    name: 'End node',
-    displayComponent: EndNodeDisplay,
-    isEnd: true
+    name: 'End',
+    displayComponent: StartEndNode,
+    isEnd: true,
+    addableComponent: ModalAddNode
   },
   {
-    type: 'node',
+    type: 'channelNode',
     name: 'Node',
-    displayComponent: NodeDisplay
+    displayComponent: ChannelNode,
+    addableComponent: ModalAddNode
   },
   {
     type: 'condition',
     name: 'Condition Node',
-    displayComponent: ConditionNodeDisplay
+    displayComponent: ConditionNodeDisplay,
+    addableComponent: ModalAddNode
   },
   {
     type: 'branch',
     name: 'Branch',
     conditionNodeType: 'condition',
-    displayComponent: NodeDisplay
+    displayComponent: BranchNode,
+    addableComponent: ModalAddNode
   }
 ]
 
@@ -84,6 +96,8 @@ const NodeForm = () => {
         onChange={handleChange}
         registerNodes={registerNodes}
         showPracticalBranchNode
+        showPracticalBranchRemove
+        // showArrow
         // historyTool
         // zoomTool
         // DrawerComponent={DrawerComponent}

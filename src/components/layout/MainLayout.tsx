@@ -7,8 +7,10 @@ const MainLayout = () => {
     <Box
       display={'flex'}
       minHeight={'100vh'}
+      height={'100vh'}
       bgcolor={'white'}
       minWidth={'100vw'}
+      width={'100vw'}
       justifyContent={'center'}
       alignItems={'center'}
     >
