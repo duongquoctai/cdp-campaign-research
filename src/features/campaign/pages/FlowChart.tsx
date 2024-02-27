@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import FlowBuilder, { INode, IRegisterNode } from 'react-flow-builder'
+import FlowBuilder, { INode, IRegisterNode, buildFlatNodes, buildTreeNodes } from 'react-flow-builder'
 import BranchNode from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
 import ConditionNode from '../components/CustomNodes/ConditionNode'
@@ -83,29 +83,13 @@ const registerNodes: IRegisterNode[] = [
 ]
 
 const NodeForm = () => {
-  const [nodes, setNodes] = useState<INode[]>([
-    {
-      id: 'node-0d9d4733-e48c-41fd-a41f-d93cc4718d97',
-      type: 'start',
-      name: 'start'
-    },
-    {
-      id: 'node-972401ca-c4db-4268-8780-5607876d8372',
-      type: 'channelNode',
-      name: 'test',
-      data: {
-        test: 111
-      }
-    },
-    {
-      id: 'node-b106675a-5148-4a2e-aa86-8e06abd692d1',
-      type: 'end',
-      name: 'end'
-    }
-  ])
+  const [nodes, setNodes] = useState<INode[]>([])
 
   const handleChange = (nodes: INode[]) => {
-    console.log('nodes change', nodes)
+    const flatNodes = buildFlatNodes({ registerNodes, nodes })
+    console.log('flatNodes :>> ', flatNodes)
+    const treeNodes = buildTreeNodes({ nodes: flatNodes })
+    console.log('treeNodes :>> ', treeNodes)
     setNodes(nodes)
   }
 
@@ -117,6 +101,7 @@ const NodeForm = () => {
         registerNodes={registerNodes}
         showPracticalBranchNode
         showPracticalBranchRemove
+        scrollByDrag
         // showArrow
         // historyTool
         // zoomTool
