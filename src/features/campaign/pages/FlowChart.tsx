@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import FlowBuilder, { INode, IRegisterNode, createUuid } from 'react-flow-builder'
 import BranchNode from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
+import { ConditionNode } from '../components/CustomNodes/ConditionNode'
 import { DataSourceNode } from '../components/CustomNodes/DataSourceNode'
 import { StartEndNode } from '../components/CustomNodes/StartEndNode'
 import ModalAddNode from '../components/ModalAddNode'
@@ -38,7 +39,7 @@ const registerNodes: IRegisterNode[] = [
   {
     type: 'condition',
     name: 'Condition Node',
-    displayComponent: ChannelNode,
+    displayComponent: ConditionNode,
     addableComponent: ModalAddNode
   },
   {
@@ -55,16 +56,10 @@ const registerNodes: IRegisterNode[] = [
 const genChildren = (nodes: INode[], node: INode, action: string) => {
   if (action === 'add-node__branch') return []
   if (action === 'add-node__condition') {
-    if (nodes.length <= 1) {
-      return [
-        { id: createUuid(), name: 'channelNode', type: 'channelNode', path: [...(node.path ?? []), '0'] },
-        { id: createUuid(), name: 'end', type: 'end', path: [...(node.path ?? []), '1'] }
-      ]
-    } else {
-      console.log(nodes)
-
-      return [{ id: createUuid(), name: 'end', type: 'end', path: [...(node.path ?? []), '1'] }]
-    }
+    return [
+      { id: createUuid(), name: 'channelNode', type: 'channelNode', path: [...(node.path ?? []), '0'] },
+      { id: createUuid(), name: 'end', type: 'end', path: [...(node.path ?? []), '1'] }
+    ]
   }
 }
 
