@@ -1,0 +1,6 @@
+.flow-builder-branch-node__content ~ .flow-builder-line__split:nth-of-type(n + 2),
+.flow-builder-branch-node__conditions .flow-builder-node.flow-builder-condition-node > :nth-child(2),
+.flow-builder-line__fill,
+.flow-builder-branch-node__dashed {
+  display: none;
+}

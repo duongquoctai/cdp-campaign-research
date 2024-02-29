@@ -1,57 +1,25 @@
-import { useState } from 'react'
-import FlowBuilder, { INode, IRegisterNode, buildFlatNodes, buildTreeNodes } from 'react-flow-builder'
+import { useEffect, useState } from 'react'
+import FlowBuilder, { INode, IRegisterNode, createUuid } from 'react-flow-builder'
 import BranchNode from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
-import ConditionNode from '../components/CustomNodes/ConditionNode'
+import { DataSourceNode } from '../components/CustomNodes/DataSourceNode'
 import { StartEndNode } from '../components/CustomNodes/StartEndNode'
 import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
-
-// const StartNodeDisplay: React.FC = () => {
-//   const node = useContext(NodeContext)
-//   return <div className='start-node'>{node.name}</div>
-// }
-
-// const EndNodeDisplay: React.FC = () => {
-//   const node = useContext(NodeContext)
-//   return <div className='end-node'>{node.name}</div>
-// }
-
-// const NodeDisplay: React.FC = () => {
-//   const node = useContext(NodeContext)
-//   const { removeNode } = useAction()
-
-//   return (
-//     <div
-//       className={`other-node ${node.configuring ? 'node-configuring' : ''} ${
-//         node.validateStatusError ? 'node-status-error' : ''
-//       }`}
-//     >
-//       {node.data ? node.data.name : node.name}
-//       <Button onClick={() => removeNode(node)}>remove</Button>
-//     </div>
-//   )
-// }
-
-// const ConditionNodeDisplay: React.FC = () => {
-//   const node = useContext(NodeContext)
-//   return (
-//     <div
-//       className={`condition-node ${
-//         node.configuring ? 'node-configuring' : ''
-//       } ${node.validateStatusError ? 'node-status-error' : ''}`}
-//     >
-//       {node.data ? node.data.name : node.name}
-//     </div>
-//   )
-// }
+import './style.css'
 
 const registerNodes: IRegisterNode[] = [
+  {
+    type: 'dataSource',
+    name: 'dataSource',
+    displayComponent: DataSourceNode,
+    addableNodeTypes: [],
+    isStart: true
+  },
   {
     type: 'start',
     name: 'Start',
     displayComponent: StartEndNode,
-    isStart: true,
     addableComponent: ModalAddNode
   },
   {
@@ -70,7 +38,7 @@ const registerNodes: IRegisterNode[] = [
   {
     type: 'condition',
     name: 'Condition Node',
-    displayComponent: ConditionNode,
+    displayComponent: ChannelNode,
     addableComponent: ModalAddNode
   },
   {
@@ -78,20 +46,79 @@ const registerNodes: IRegisterNode[] = [
     name: 'Branch',
     conditionNodeType: 'condition',
     displayComponent: BranchNode,
-    addableComponent: ModalAddNode
+    addableComponent: ModalAddNode,
+    addConditionIcon: <div style={{ width: 2, height: 10, backgroundColor: '#999' }} />,
+    addableNodeTypes: []
   }
 ]
 
-const NodeForm = () => {
-  const [nodes, setNodes] = useState<INode[]>([])
+const genChildren = (nodes: INode[], node: INode, action: string) => {
+  if (action === 'add-node__branch') return []
+  if (action === 'add-node__condition') {
+    if (nodes.length <= 1) {
+      return [
+        { id: createUuid(), name: 'channelNode', type: 'channelNode', path: [...(node.path ?? []), '0'] },
+        { id: createUuid(), name: 'end', type: 'end', path: [...(node.path ?? []), '1'] }
+      ]
+    } else {
+      console.log(nodes)
 
-  const handleChange = (nodes: INode[]) => {
-    const flatNodes = buildFlatNodes({ registerNodes, nodes })
-    console.log('flatNodes :>> ', flatNodes)
-    const treeNodes = buildTreeNodes({ nodes: flatNodes })
-    console.log('treeNodes :>> ', treeNodes)
-    setNodes(nodes)
+      return [{ id: createUuid(), name: 'end', type: 'end', path: [...(node.path ?? []), '1'] }]
+    }
   }
+}
+
+const recursiveUpdateNodes = (nodes: INode[], nodeChanged: INode, action: string): INode[] =>
+  nodes.map((node) => {
+    if (node.id === nodeChanged.id) {
+      return { ...node, children: genChildren(nodes, node, action) }
+    }
+    if (node.children) {
+      return { ...node, children: recursiveUpdateNodes(node.children, nodeChanged, action) }
+    }
+    return node
+  })
+
+const removeEndNodes = (nodes: INode[]) =>
+  nodes.reduce((newNodes: INode[], currentNode, i) => {
+    if (currentNode.children?.length) {
+      currentNode.children = removeEndNodes(currentNode.children)
+    }
+
+    if (!(currentNode.type === 'end' && i && nodes[i - 1].type === 'branch' && nodes[i - 1].children?.length)) {
+      newNodes.push(currentNode)
+    }
+
+    return newNodes
+  }, [])
+
+const NodeForm = () => {
+  const [nodes, setNodes] = useState<INode[]>([
+    { id: createUuid(), name: 'dataSource', type: 'dataSource' },
+    { id: createUuid(), name: 'start', type: 'start' },
+    { id: createUuid(), name: 'end', type: 'end' }
+  ])
+
+  const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
+    console.clear()
+
+    if (nodeChanged?.type) {
+      if (
+        (nodeChanged.type === 'branch' && changeEvent === 'add-node__branch') ||
+        (nodeChanged.type === 'condition' && changeEvent === 'add-node__condition')
+      ) {
+        setNodes(removeEndNodes(recursiveUpdateNodes(nodes, nodeChanged, changeEvent)))
+      } else {
+        setNodes(nodes)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (nodes.length === 2) {
+      setNodes((state) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
+    }
+  }, [nodes])
 
   return (
     <>
@@ -101,13 +128,7 @@ const NodeForm = () => {
         registerNodes={registerNodes}
         showPracticalBranchNode
         showPracticalBranchRemove
-        scrollByDrag
-        // showArrow
-        // historyTool
-        // zoomTool
-        // DrawerComponent={DrawerComponent}
         PopoverComponent={PopoverComponent}
-        // PopconfirmComponent={PopconfirmComponent}
       />
     </>
   )
