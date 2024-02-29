@@ -40,7 +40,8 @@ const registerNodes: IRegisterNode[] = [
     type: 'condition',
     name: 'Condition Node',
     displayComponent: ConditionNode,
-    addableComponent: ModalAddNode
+    addableComponent: ModalAddNode,
+    addableNodeTypes: []
   },
   {
     type: 'branch',
@@ -76,16 +77,51 @@ const recursiveUpdateNodes = (nodes: INode[], nodeChanged: INode, action: string
 
 const removeEndNodes = (nodes: INode[]) =>
   nodes.reduce((newNodes: INode[], currentNode, i) => {
+    if (currentNode.type === 'end' && i && nodes[i - 1].type === 'branch' && nodes[i - 1].children?.length) {
+      return newNodes
+    }
+
     if (currentNode.children?.length) {
       currentNode.children = removeEndNodes(currentNode.children)
     }
 
-    if (!(currentNode.type === 'end' && i && nodes[i - 1].type === 'branch' && nodes[i - 1].children?.length)) {
-      newNodes.push(currentNode)
-    }
-
+    newNodes.push(currentNode)
     return newNodes
   }, [])
+
+const addEndNodes = (nodes: INode[]) =>
+  nodes.reduce((newNodes: INode[], currentNode, i) => {
+    newNodes.push(currentNode)
+    if (
+      currentNode.type === 'branch' &&
+      (!currentNode.children || !currentNode.children.length) &&
+      (i === nodes.length - 1 || (i < nodes.length - 1 && nodes[i + 1].type !== 'branch'))
+    ) {
+      newNodes.push({ id: createUuid(), name: 'end', type: 'end' })
+    }
+    if (currentNode.children) {
+      currentNode.children = addEndNodes(currentNode.children)
+    }
+    return newNodes
+  }, [])
+
+const removeConditionNodes = (nodes: INode[]): INode[] =>
+  nodes.map((node) => {
+    if (node.type === 'branch') {
+      if (node.children?.length === 1 && node.children[0].type === 'condition') {
+        return { ...node, children: [] }
+      }
+      if (node.children && node.children.length > 1) {
+        return {
+          ...node,
+          children: node.children.filter(
+            (child) => !(child.type === 'condition' && child.children?.length === 1 && child.children[0].type === 'end')
+          )
+        }
+      }
+    }
+    return { ...node, children: node.children ? removeConditionNodes(node.children) : node.children }
+  })
 
 const NodeForm = () => {
   const [nodes, setNodes] = useState<INode[]>([
@@ -96,6 +132,7 @@ const NodeForm = () => {
 
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
     console.clear()
+    console.log(nodes, changeEvent, nodeChanged)
 
     if (nodeChanged?.type) {
       if (
@@ -103,6 +140,8 @@ const NodeForm = () => {
         (nodeChanged.type === 'condition' && changeEvent === 'add-node__condition')
       ) {
         setNodes(removeEndNodes(recursiveUpdateNodes(nodes, nodeChanged, changeEvent)))
+      } else if (changeEvent === 'remove-node') {
+        setNodes(addEndNodes(removeConditionNodes(nodes)))
       } else {
         setNodes(nodes)
       }
@@ -110,6 +149,8 @@ const NodeForm = () => {
   }
 
   useEffect(() => {
+    console.log('real nodes', nodes)
+
     if (nodes.length === 2) {
       setNodes((state) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
     }
