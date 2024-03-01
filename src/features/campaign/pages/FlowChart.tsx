@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import FlowBuilder, { INode, IRegisterNode, createUuid } from 'react-flow-builder'
+import FlowBuilder, { INode, IRegisterNode, createUuid, buildTreeNodes } from 'react-flow-builder'
 import { BranchNode } from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
 import { ConditionNode } from '../components/CustomNodes/ConditionNode'
@@ -9,8 +9,13 @@ import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
 import '../styles/FlowChart.css'
 import { addEndNodes, recursiveUpdateNodes, removeConditionNodes, removeEndNodes } from '../utils/FlowChart'
+import { useCampaignStore } from '../store/campagin'
+import FacebookChannel from '../components/CustomNodes/ChannelNode/FacebookChannel'
+import ZNSChannel from '../components/CustomNodes/ChannelNode/ZNSChannel'
+import EmailChannel from '../components/CustomNodes/ChannelNode/EmailChannel'
+import SMSChannel from '../components/CustomNodes/ChannelNode/SMSChannel'
 
-const registerNodes: IRegisterNode[] = [
+export const registerNodes: IRegisterNode[] = [
   {
     type: 'dataSource',
     name: 'dataSource',
@@ -35,14 +40,60 @@ const registerNodes: IRegisterNode[] = [
     type: 'channelNode',
     name: 'Node',
     displayComponent: ChannelNode,
-    addableComponent: ModalAddNode
+    addableComponent: ModalAddNode,
+    initialNodeData: {
+      data: 'my channel node'
+    }
+  },
+  {
+    type: 'facebook',
+    name: 'facebook',
+    displayComponent: FacebookChannel,
+    addableComponent: ModalAddNode,
+    initialNodeData: {
+      id: createUuid(),
+      data: 'facebook'
+    }
+  },
+  {
+    type: 'zalo',
+    name: 'zalo',
+    displayComponent: ZNSChannel,
+    addableComponent: ModalAddNode,
+    initialNodeData: {
+      id: createUuid(),
+      data: 'zns'
+    }
+  },
+  {
+    type: 'email',
+    name: 'email',
+    displayComponent: EmailChannel,
+    addableComponent: ModalAddNode,
+    initialNodeData: {
+      id: createUuid(),
+      data: 'email'
+    }
+  },
+  {
+    type: 'sms',
+    name: 'sms',
+    displayComponent: SMSChannel,
+    addableComponent: ModalAddNode,
+    initialNodeData: {
+      id: createUuid(),
+      data: 'sms'
+    }
   },
   {
     type: 'condition',
     name: 'Condition Node',
-    displayComponent: ConditionNode,
+    // displayComponent: ConditionNode,
     addableComponent: ModalAddNode,
-    addableNodeTypes: []
+    addableNodeTypes: [],
+    initialNodeData: {
+      data: 'my connection node'
+    }
   },
   {
     type: 'branch',
@@ -56,17 +107,10 @@ const registerNodes: IRegisterNode[] = [
 ]
 
 const NodeForm = () => {
-  const [nodes, setNodes] = useState<INode[]>([
-    { id: createUuid(), name: 'dataSource', type: 'dataSource' },
-    { id: createUuid(), name: 'start', type: 'start' },
-    { id: createUuid(), name: 'branch', type: 'branch' },
-    { id: createUuid(), name: 'end', type: 'end' }
-  ])
+  const { nodes, setNodes } = useCampaignStore()
 
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
-    console.clear()
-    console.log(nodes, changeEvent, nodeChanged)
-
+    return
     if (nodeChanged?.type) {
       if (
         (nodeChanged.type === 'branch' && changeEvent === 'add-node__branch') ||
@@ -82,11 +126,9 @@ const NodeForm = () => {
   }
 
   useEffect(() => {
-    console.log('real nodes', nodes)
-
-    if (nodes.length === 2) {
-      setNodes((state) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
-    }
+    // if (nodes.length === 2) {
+    //   setNodes((state: INode[]) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
+    // }
   }, [nodes])
 
   return (

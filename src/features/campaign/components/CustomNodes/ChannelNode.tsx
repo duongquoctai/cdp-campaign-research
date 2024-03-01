@@ -35,7 +35,7 @@ const ChannelNode = () => {
         <Typography noWrap fontWeight={600} color='grey.900' maxWidth={220}>
           {node.name}
         </Typography>
-        <Button onClick={() => removeNode()}>Remove</Button>
+
         {/* <Button
           onClick={() => {
             setSelectedNode(node)
@@ -45,6 +45,7 @@ const ChannelNode = () => {
           Save
         </Button> */}
       </Stack>
+      <Button onClick={() => removeNode()}>Remove</Button>
       {isExpand && (
         <Stack justifyContent={'center'} alignItems={'center'} height={200}>
           Config

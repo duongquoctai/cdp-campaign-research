@@ -1,4 +1,5 @@
 import { INode, createUuid } from 'react-flow-builder'
+import { ChannelType } from '../constants/constants'
 
 export const genChildren = (nodes: INode[], node: INode, action: string) => {
   if (action === 'add-node__branch') return []
@@ -68,3 +69,34 @@ export const removeConditionNodes = (nodes: INode[]): INode[] =>
     }
     return { ...node, children: node.children ? removeConditionNodes(node.children) : node.children }
   })
+
+export const addChannelInMultipleBranch = (nodes: INode[], branchingNode: INode, channel: ChannelType) => {
+  const newNode: INode = {
+    id: createUuid(),
+    name: 'condition',
+    type: 'condition',
+    data: {
+      channel_condition: channel
+    },
+    children: [
+      {
+        id: createUuid(),
+        name: channel,
+        type: channel
+      }
+    ]
+  }
+  if (branchingNode.children) {
+    branchingNode.children.push(newNode)
+  } else {
+    branchingNode.children = [newNode]
+  }
+  return nodes
+}
+
+export const removeChannelInMultipleBranch = (nodes: INode[], branchingNode: INode, channel: ChannelType) => {
+  if (!branchingNode.children) return nodes
+  const newConditions = branchingNode.children.filter((condition) => condition.data?.channel_condition !== channel)
+  branchingNode.children = newConditions
+  return nodes
+}

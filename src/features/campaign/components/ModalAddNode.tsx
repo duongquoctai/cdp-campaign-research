@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react'
 import { MenuItem, Stack, Typography } from '@mui/material'
-import { IAddableComponent } from 'react-flow-builder'
+import { useContext } from 'react'
+import { IAddableComponent, NodeContext, useAction } from 'react-flow-builder'
 
 const nodeTypes = [
   { type: 'channelNode', title: 'Channel Node', icon: <Icon icon='mdi:ads' /> },
@@ -8,6 +9,13 @@ const nodeTypes = [
 ]
 const ModalAddNode = (props: IAddableComponent) => {
   const { add } = props
+  const { addNode } = useAction()
+  const node = useContext(NodeContext)
+
+  const handleAddNode = (type: string) => {
+    addNode(node, type)
+  }
+
   return (
     <>
       {nodeTypes.map((e, i) => (
@@ -20,7 +28,7 @@ const ModalAddNode = (props: IAddableComponent) => {
               bgcolor: 'grey.100'
             }
           }}
-          onClick={() => add(e.type)}
+          onClick={() => handleAddNode(e.type)}
         >
           <Stack direction='row' spacing={1} alignItems='center'>
             <Stack
