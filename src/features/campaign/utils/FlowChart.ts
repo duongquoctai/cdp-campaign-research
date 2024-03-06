@@ -100,3 +100,20 @@ export const removeChannelInMultipleBranch = (nodes: INode[], branchingNode: INo
   branchingNode.children = newConditions
   return nodes
 }
+
+export const addMultipleBranch = (nodes: INode[], currentNode: INode) => {
+  const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNode.id)
+  const newMultipleBranch: INode = {
+    id: createUuid(),
+    type: 'branch',
+    name: 'branch',
+    children: []
+  }
+  nodes.splice(indexOfCurrentNode + 1, 0, newMultipleBranch)
+  return nodes
+}
+
+export const switchAttributeBranch = (nodes: INode[], currentNode: INode) => {
+  if (currentNode.children) currentNode.children = []
+  return nodes
+}

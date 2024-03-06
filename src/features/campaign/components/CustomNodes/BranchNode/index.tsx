@@ -3,11 +3,14 @@ import { useContext, useState } from 'react'
 import { NodeContext, useAction } from 'react-flow-builder'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { MultiChannels } from './MultiChannels'
+import { switchAttributeBranch } from '~/features/campaign/utils/FlowChart'
+import { useCampaignStore } from '~/features/campaign/store/campagin'
 
 export const BranchNode = () => {
   // utils
   const node = useContext(NodeContext)
-  const { removeNode } = useAction()
+  const { nodes, setNodes } = useCampaignStore()
+  const { removeNode, addNode } = useAction()
 
   // states
   const [isExpand, setIsExpand] = useState(true)
@@ -16,7 +19,15 @@ export const BranchNode = () => {
   // funcs
   const toggleExpand = () => setIsExpand((state) => !state)
 
-  const handleChange = (_: unknown, newValue: string) => setCurrentTab(newValue)
+  const handleChange = (_: unknown, newValue: string) => {
+    if (newValue === '2') {
+      const newNodes = switchAttributeBranch(nodes, node)
+      setNodes(newNodes)
+      // addNode(node, 'connection')
+      // addNode(node, 'connection')
+    }
+    setCurrentTab(newValue)
+  }
 
   return (
     <Card onClick={toggleExpand}>

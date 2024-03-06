@@ -2,6 +2,8 @@ import { Icon } from '@iconify/react'
 import { MenuItem, Stack, Typography } from '@mui/material'
 import { useContext } from 'react'
 import { IAddableComponent, NodeContext, useAction } from 'react-flow-builder'
+import { useCampaignStore } from '../store/campagin'
+import { addMultipleBranch } from '../utils/FlowChart'
 
 const nodeTypes = [
   { type: 'channelNode', title: 'Channel Node', icon: <Icon icon='mdi:ads' /> },
@@ -11,9 +13,15 @@ const ModalAddNode = (props: IAddableComponent) => {
   const { add } = props
   const { addNode } = useAction()
   const node = useContext(NodeContext)
+  const { nodes, setNodes } = useCampaignStore()
 
   const handleAddNode = (type: string) => {
-    addNode(node, type)
+    if (type === 'branch') {
+      const newNodes = addMultipleBranch(nodes, node)
+      setNodes(newNodes)
+    } else {
+      addNode(node, type)
+    }
   }
 
   return (
