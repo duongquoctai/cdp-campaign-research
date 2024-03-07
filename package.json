@@ -36,6 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "prettier": "^3.2.5",
     "typescript": "^5.2.2",
+    "use-deep-compare-effect": "^1.8.1",
     "vite": "^5.1.4",
     "zustand": "^4.5.1"
   }

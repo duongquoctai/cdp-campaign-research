@@ -15,18 +15,14 @@ export const MultiChannels = () => {
   const onSelectChannel = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedChannels((state) => {
       if (state.includes(event.target.name)) {
-        const newNodes = removeChannelInMultipleBranch(nodes, node, event.target.name as ChannelType)
-        setNodes(newNodes)
+        removeChannelInMultipleBranch(nodes, node, event.target.name as ChannelType, removeNode)
         return state.filter((channel) => channel !== event.target.name)
       } else {
-        const newNodes = addChannelInMultipleBranch(nodes, node, event.target.name as ChannelType)
-        setNodes(newNodes)
+        addChannelInMultipleBranch(nodes, node, event.target.name as ChannelType, addNode)
         return [...state, event.target.name]
       }
     })
   }
-
-  console.log('nodes', nodes)
 
   return (
     <FormGroup>

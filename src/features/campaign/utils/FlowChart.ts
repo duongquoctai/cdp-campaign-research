@@ -1,5 +1,7 @@
-import { INode, createUuid } from 'react-flow-builder'
+import { INode, buildFlatNodes, createUuid } from 'react-flow-builder'
 import { ChannelType } from '../constants/constants'
+import { registerNodes } from '../pages/FlowChart'
+import { useCampaignStore } from '../store/campagin'
 
 export const genChildren = (nodes: INode[], node: INode, action: string) => {
   if (action === 'add-node__branch') return []
@@ -70,35 +72,31 @@ export const removeConditionNodes = (nodes: INode[]): INode[] =>
     return { ...node, children: node.children ? removeConditionNodes(node.children) : node.children }
   })
 
-export const addChannelInMultipleBranch = (nodes: INode[], branchingNode: INode, channel: ChannelType) => {
-  const newNode: INode = {
-    id: createUuid(),
-    name: 'condition',
-    type: 'condition',
-    data: {
-      channel_condition: channel
-    },
-    children: [
-      {
-        id: createUuid(),
-        name: channel,
-        type: channel
-      }
-    ]
-  }
+export const addChannelInMultipleBranch = (
+  nodes: INode[],
+  branchingNode: INode,
+  channel: ChannelType,
+  addNode: (_node: INode | string, _newNodeType?: string) => INode
+) => {
   if (branchingNode.children) {
-    branchingNode.children.push(newNode)
-  } else {
-    branchingNode.children = [newNode]
+    const conditionNode = addNode(branchingNode, 'condition')
+    addNode(conditionNode, channel)
+    useCampaignStore.getState().setForceUpdate()
   }
-  return nodes
 }
 
-export const removeChannelInMultipleBranch = (nodes: INode[], branchingNode: INode, channel: ChannelType) => {
+export const removeChannelInMultipleBranch = (
+  nodes: INode[],
+  branchingNode: INode,
+  channel: ChannelType,
+  removeNode: (targetNode?: INode | INode[] | string | string[]) => void
+) => {
   if (!branchingNode.children) return nodes
-  const newConditions = branchingNode.children.filter((condition) => condition.data?.channel_condition !== channel)
-  branchingNode.children = newConditions
-  return nodes
+  const conditionNodes = branchingNode.children
+  const deletedNode = conditionNodes.find((conditionNode) =>
+    conditionNode.children?.some((channelNode) => channelNode.type === channel)
+  )
+  removeNode(deletedNode)
 }
 
 export const addMultipleBranch = (nodes: INode[], currentNode: INode) => {
@@ -113,7 +111,33 @@ export const addMultipleBranch = (nodes: INode[], currentNode: INode) => {
   return nodes
 }
 
-export const switchAttributeBranch = (nodes: INode[], currentNode: INode) => {
-  if (currentNode.children) currentNode.children = []
+export const switchAttributeBranch = (
+  nodes: INode[],
+  currentNode: INode,
+  addNode: (_node: INode | string, _newNodeType?: string) => INode,
+  removeNode: (targetNode?: INode | INode[] | string | string[]) => void
+) => {
+  removeNode(currentNode.children)
+  addNode(currentNode, 'condition')
+  addNode(currentNode, 'condition')
   return nodes
+}
+
+export const switchMultipleBranch = (
+  nodes: INode[],
+  currentNode: INode,
+  removeNodes: (targetNode?: INode | INode[] | string | string[]) => void
+) => {
+  removeNodes(currentNode.children)
+}
+
+export const flatNodes = (nodes: INode[]) => {
+  let result: INode[] = []
+  for (const node of nodes) {
+    result.push(node)
+    if (node.children) {
+      result = result.concat(flatNodes(node.children))
+    }
+  }
+  return result
 }

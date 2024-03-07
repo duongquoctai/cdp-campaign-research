@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import FlowBuilder, { INode, IRegisterNode, createUuid, buildTreeNodes } from 'react-flow-builder'
+import FlowBuilder, { INode, IRegisterNode, createUuid, buildTreeNodes, buildFlatNodes } from 'react-flow-builder'
 import { BranchNode } from '../components/CustomNodes/BranchNode'
 import ChannelNode from '../components/CustomNodes/ChannelNode'
 import { ConditionNode } from '../components/CustomNodes/ConditionNode'
@@ -8,12 +8,13 @@ import { StartEndNode } from '../components/CustomNodes/StartEndNode'
 import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
 import '../styles/FlowChart.css'
-import { addEndNodes, recursiveUpdateNodes, removeConditionNodes, removeEndNodes } from '../utils/FlowChart'
+import { addEndNodes, flatNodes, recursiveUpdateNodes, removeConditionNodes, removeEndNodes } from '../utils/FlowChart'
 import { useCampaignStore } from '../store/campagin'
 import FacebookChannel from '../components/CustomNodes/ChannelNode/FacebookChannel'
 import ZNSChannel from '../components/CustomNodes/ChannelNode/ZNSChannel'
 import EmailChannel from '../components/CustomNodes/ChannelNode/EmailChannel'
 import SMSChannel from '../components/CustomNodes/ChannelNode/SMSChannel'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 export const registerNodes: IRegisterNode[] = [
   {
@@ -90,11 +91,21 @@ export const registerNodes: IRegisterNode[] = [
     name: 'Condition Node',
     // displayComponent: ConditionNode,
     addableComponent: ModalAddNode,
-    addableNodeTypes: [],
+    // addableNodeTypes: [],
     initialNodeData: {
       data: 'my connection node'
     }
   },
+  // {
+  //   type: 'addable_condition',
+  //   name: 'Addable condition node',
+  //   // displayComponent: ConditionNode,
+  //   addableComponent: ModalAddNode,
+  //   // addableNodeTypes: [],
+  //   initialNodeData: {
+  //     data: 'my connection node'
+  //   }
+  // },
   {
     type: 'branch',
     name: 'Branch',
@@ -108,7 +119,8 @@ export const registerNodes: IRegisterNode[] = [
 
 const NodeForm = () => {
   const { nodes, setNodes } = useCampaignStore()
-
+  // const flatNodes = buildFlatNodes({ registerNodes, nodes })
+  // console.log('flat', flatNodes)
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
     return
     if (nodeChanged?.type) {
@@ -124,12 +136,13 @@ const NodeForm = () => {
       }
     }
   }
-
+  console.log('node=====', flatNodes(nodes))
   useEffect(() => {
+    console.log('vo day ko')
     // if (nodes.length === 2) {
     //   setNodes((state: INode[]) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
     // }
-  }, [nodes])
+  }, [nodes, nodes.length])
 
   return (
     <>
