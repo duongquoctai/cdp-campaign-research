@@ -1,6 +1,8 @@
 import { INode, createUuid } from 'react-flow-builder'
 import { create } from 'zustand'
+import { createWithEqualityFn } from 'zustand/traditional'
 import { dataNode } from '../types/Campagin.type'
+import isEqual from 'react-fast-compare'
 
 export interface UseCampaignStore {
   nodes: INode[]
@@ -12,6 +14,7 @@ export interface UseCampaignStore {
 export interface UseCampaignDataStore {
   dataNodes: dataNode[]
   setDataNodes: (dataNodes: dataNode[]) => void
+  setDataNode: (dataNodes: dataNode) => void
 }
 
 export const useCampaignStore = create<UseCampaignStore>((set) => ({
@@ -26,7 +29,23 @@ export const useCampaignStore = create<UseCampaignStore>((set) => ({
   setForceUpdate: () => set((prev) => ({ forceUpdate: !prev }))
 }))
 
-export const useCampaignDataStore = create<UseCampaignDataStore>((set) => ({
-  dataNodes: [],
-  setDataNodes: (dataNodes: dataNode[]) => set({ dataNodes })
-}))
+export const useCampaignDataStore = createWithEqualityFn<UseCampaignDataStore>(
+  (set) => ({
+    dataNodes: [],
+    setDataNodes: (dataNodes: dataNode[]) => set({ dataNodes }),
+    setDataNode: (dataNode: dataNode) =>
+      set((prev) => {
+        const dataNodes = prev.dataNodes
+        return {
+          dataNodes: dataNodes.map((node) => {
+            if (node.id === dataNode.id) {
+              return dataNode
+            } else {
+              return node
+            }
+          })
+        }
+      })
+  }),
+  isEqual
+)

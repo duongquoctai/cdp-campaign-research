@@ -80,7 +80,8 @@ export const addChannelInMultipleBranch = (
 ) => {
   if (branchingNode.children) {
     const conditionNode = addNode(branchingNode, 'condition')
-    addNode(conditionNode, channel)
+    const logID = addNode(conditionNode, channel)
+    console.log('llllll', logID)
     useCampaignStore.getState().setForceUpdate()
   }
 }

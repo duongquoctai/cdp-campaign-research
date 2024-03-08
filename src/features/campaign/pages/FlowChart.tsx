@@ -9,12 +9,13 @@ import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
 import '../styles/FlowChart.css'
 import { addEndNodes, flatNodes, recursiveUpdateNodes, removeConditionNodes, removeEndNodes } from '../utils/FlowChart'
-import { useCampaignStore } from '../store/campagin'
+import { useCampaignDataStore, useCampaignStore } from '../store/campagin'
 import FacebookChannel from '../components/CustomNodes/ChannelNode/FacebookChannel'
 import ZNSChannel from '../components/CustomNodes/ChannelNode/ZNSChannel'
 import EmailChannel from '../components/CustomNodes/ChannelNode/EmailChannel'
 import SMSChannel from '../components/CustomNodes/ChannelNode/SMSChannel'
 import useDeepCompareEffect from 'use-deep-compare-effect'
+import { dataNode } from '../types/Campagin.type'
 
 export const registerNodes: IRegisterNode[] = [
   {
@@ -50,11 +51,7 @@ export const registerNodes: IRegisterNode[] = [
     type: 'facebook',
     name: 'facebook',
     displayComponent: FacebookChannel,
-    addableComponent: ModalAddNode,
-    initialNodeData: {
-      id: createUuid(),
-      data: 'facebook'
-    }
+    addableComponent: ModalAddNode
   },
   {
     type: 'zalo',
@@ -119,7 +116,8 @@ export const registerNodes: IRegisterNode[] = [
 
 const NodeForm = () => {
   const { nodes, setNodes } = useCampaignStore()
-  // const flatNodes = buildFlatNodes({ registerNodes, nodes })
+  const setDataNodes = useCampaignDataStore((state) => state.setDataNodes)
+  const flattenNodes = flatNodes(nodes)
   // console.log('flat', flatNodes)
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
     return
@@ -136,13 +134,20 @@ const NodeForm = () => {
       }
     }
   }
-  console.log('node=====', flatNodes(nodes))
+  console.log('chay vo day')
   useEffect(() => {
-    console.log('vo day ko')
-    // if (nodes.length === 2) {
-    //   setNodes((state: INode[]) => [...state, { id: createUuid(), name: 'end', type: 'end' }])
-    // }
-  }, [nodes, nodes.length])
+    const nodeIds: dataNode[] = flattenNodes.map((node) => {
+      return {
+        id: node.id,
+        data: {
+          account: '',
+          template: '',
+          token: ''
+        }
+      }
+    })
+    setDataNodes(nodeIds)
+  }, [flattenNodes.length])
 
   return (
     <>
