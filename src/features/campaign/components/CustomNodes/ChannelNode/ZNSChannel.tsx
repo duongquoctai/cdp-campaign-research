@@ -2,6 +2,7 @@ import { Box, Card, TextField } from '@mui/material'
 import React from 'react'
 
 const ZNSChannel = () => {
+  console.log('rerender zns')
   return (
     <div>
       <Card>

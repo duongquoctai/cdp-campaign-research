@@ -134,7 +134,7 @@ const NodeForm = () => {
       }
     }
   }
-  console.log('chay vo day')
+  console.log('rerender flowchart: ', nodes)
   useEffect(() => {
     const nodeIds: dataNode[] = flattenNodes.map((node) => {
       return {
@@ -152,6 +152,9 @@ const NodeForm = () => {
   return (
     <>
       <FlowBuilder
+        scrollByDrag
+        zoomTool
+        draggable
         nodes={nodes}
         onChange={handleChange}
         registerNodes={registerNodes}

@@ -22,8 +22,7 @@ const FacebookChannel = React.memo(
       defaultValues: node?.data,
       mode: 'onBlur'
     })
-
-    console.log('node moi', node)
+    console.log('rerender facebook')
 
     const handleBlur = (key: string, value: string) => {
       const form = getValues()

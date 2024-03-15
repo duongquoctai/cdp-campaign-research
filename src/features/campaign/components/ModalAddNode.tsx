@@ -17,8 +17,8 @@ const ModalAddNode = (props: IAddableComponent) => {
 
   const handleAddNode = (type: string) => {
     if (type === 'branch') {
-      const newNodes = addMultipleBranch(nodes, node)
-      setNodes(newNodes)
+      addMultipleBranch(nodes, node, addNode)
+      // setNodes(newNodes)
     } else {
       addNode(node, type)
     }
