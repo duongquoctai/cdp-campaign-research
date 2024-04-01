@@ -16,6 +16,7 @@ import EmailChannel from '../components/CustomNodes/ChannelNode/EmailChannel'
 import SMSChannel from '../components/CustomNodes/ChannelNode/SMSChannel'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { dataNode } from '../types/Campagin.type'
+import LoopNode from '../components/CustomNodes/LoopNode'
 
 export const registerNodes: IRegisterNode[] = [
   {
@@ -84,14 +85,17 @@ export const registerNodes: IRegisterNode[] = [
     }
   },
   {
+    type: 'loop',
+    name: 'Loop',
+    displayComponent: LoopNode,
+    addableComponent: ModalAddNode
+  },
+  {
     type: 'condition',
     name: 'Condition Node',
     // displayComponent: ConditionNode,
-    addableComponent: ModalAddNode,
+    addableComponent: ModalAddNode
     // addableNodeTypes: [],
-    initialNodeData: {
-      data: 'my connection node'
-    }
   },
   // {
   //   type: 'addable_condition',
@@ -116,45 +120,52 @@ export const registerNodes: IRegisterNode[] = [
 
 const NodeForm = () => {
   const { nodes, setNodes } = useCampaignStore()
-  const setDataNodes = useCampaignDataStore((state) => state.setDataNodes)
   const flattenNodes = flatNodes(nodes)
+  const dataNodes = useCampaignDataStore((state) => state.dataNodes)
   // console.log('flat', flatNodes)
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
     return
-    if (nodeChanged?.type) {
-      if (
-        (nodeChanged.type === 'branch' && changeEvent === 'add-node__branch') ||
-        (nodeChanged.type === 'condition' && changeEvent === 'add-node__condition')
-      ) {
-        setNodes(removeEndNodes(recursiveUpdateNodes(nodes, nodeChanged, changeEvent)))
-      } else if (changeEvent === 'remove-node') {
-        setNodes(addEndNodes(removeConditionNodes(nodes)))
-      } else {
-        setNodes(nodes)
-      }
-    }
+    // if (nodeChanged?.type) {
+    //   if (
+    //     (nodeChanged.type === 'branch' && changeEvent === 'add-node__branch') ||
+    //     (nodeChanged.type === 'condition' && changeEvent === 'add-node__condition')
+    //   ) {
+    //     setNodes(removeEndNodes(recursiveUpdateNodes(nodes, nodeChanged, changeEvent)))
+    //   } else if (changeEvent === 'remove-node') {
+    //     setNodes(addEndNodes(removeConditionNodes(nodes)))
+    //   } else {
+    //     setNodes(nodes)
+    //   }
+    // }
   }
-  console.log('rerender flowchart: ', nodes)
-  useEffect(() => {
-    const nodeIds: dataNode[] = flattenNodes.map((node) => {
-      return {
-        id: node.id,
-        data: {
-          account: '',
-          template: '',
-          token: ''
-        }
-      }
-    })
-    setDataNodes(nodeIds)
-  }, [flattenNodes.length])
+
+  console.log('flat', flattenNodes)
+
+  // useEffect(() => {
+  //   const nodeIds: dataNode[] = flattenNodes.map((node) => {
+  //     return {
+  //       id: node.id,
+  //       data: {
+  //         user_data: {
+  //           account: '',
+  //           template: '',
+  //           token: ''
+  //         },
+  //         tree_nodes: []
+  //       }
+  //     }
+  //   })
+  //   setDataNodes(nodeIds)
+  // }, [flattenNodes.length])
+
+  console.log('cay', nodes)
+  console.log('data', dataNodes)
 
   return (
     <>
       <FlowBuilder
         scrollByDrag
         zoomTool
-        draggable
         nodes={nodes}
         onChange={handleChange}
         registerNodes={registerNodes}

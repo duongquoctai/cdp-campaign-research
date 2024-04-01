@@ -2,6 +2,7 @@ import { INode, buildFlatNodes, createUuid } from 'react-flow-builder'
 import { ChannelType } from '../constants/constants'
 import { registerNodes } from '../pages/FlowChart'
 import { useCampaignStore } from '../store/campagin'
+import { dataNode } from '../types/Campagin.type'
 
 export const genChildren = (nodes: INode[], node: INode, action: string) => {
   if (action === 'add-node__branch') return []
@@ -54,23 +55,23 @@ export const addEndNodes = (nodes: INode[]) =>
     return newNodes
   }, [])
 
-export const removeConditionNodes = (nodes: INode[]): INode[] =>
-  nodes.map((node) => {
-    if (node.type === 'branch') {
-      if (node.children?.length === 1 && node.children[0].type === 'condition') {
-        return { ...node, children: [] }
-      }
-      if (node.children && node.children.length > 1) {
-        return {
-          ...node,
-          children: node.children.filter(
-            (child) => !(child.type === 'condition' && child.children?.length === 1 && child.children[0].type === 'end')
-          )
-        }
-      }
-    }
-    return { ...node, children: node.children ? removeConditionNodes(node.children) : node.children }
-  })
+// export const removeConditionNodes = (nodes: INode[]): INode[] =>
+//   nodes.map((node) => {
+//     if (node.type === 'branch') {
+//       if (node.children?.length === 1 && node.children[0].type === 'condition') {
+//         return { ...node, children: [] }
+//       }
+//       if (node.children && node.children.length > 1) {
+//         return {
+//           ...node,
+//           children: node.children.filter(
+//             (child) => !(child.type === 'condition' && child.children?.length === 1 && child.children[0].type === 'end')
+//           )
+//         }
+//       }
+//     }
+//     return { ...node, children: node.children ? removeConditionNodes(node.children) : node.children }
+//   })
 
 export const addChannelInMultipleBranch = (
   nodes: INode[],
@@ -81,7 +82,6 @@ export const addChannelInMultipleBranch = (
   if (branchingNode.children) {
     const conditionNode = addNode(branchingNode, 'condition')
     const logID = addNode(conditionNode, channel)
-    console.log('llllll', logID)
     useCampaignStore.getState().setForceUpdate()
   }
 }
@@ -100,13 +100,75 @@ export const removeChannelInMultipleBranch = (
   removeNode(deletedNode)
 }
 
+const addDataNodes = (node: INode, dataNodes: dataNode[], setDataNodes: (dataNodes: dataNode[]) => void) => {
+  console.log('====', node.type)
+  switch (node.type) {
+    case 'branch':
+      {
+        const dataNode: dataNode = {
+          id: node.id,
+          data: {
+            tree_nodes: []
+          }
+        }
+        setDataNodes([...dataNodes, dataNode])
+      }
+      break
+    case 'zns':
+    case 'sms':
+    case 'facebook':
+    case 'email': {
+      const dataNode: dataNode = {
+        id: node.id,
+        data: {
+          user_data: {
+            account: '',
+            template: '',
+            token: ''
+          },
+          tree_nodes: []
+        }
+      }
+      setDataNodes([...dataNodes, dataNode])
+      break
+    }
+    case 'loop': {
+      const dataNode: dataNode = {
+        id: node.id,
+        data: {
+          tree_nodes: [{ id: createUuid(), name: 'start', type: 'start' }]
+        }
+      }
+      setDataNodes([...dataNodes, dataNode])
+      break
+    }
+    default:
+      break
+  }
+}
+
 export const addMultipleBranch = (
   nodes: INode[],
   currentNode: INode,
-  addNode: (_node: INode | string, _newNodeType?: string) => INode
+  addNode: (_node: INode | string, _newNodeType?: string) => INode,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void
 ) => {
   const branch = addNode(currentNode, 'branch')
   branch.children = []
+  addDataNodes(branch, dataNodes, setDataNodes)
+  return branch
+}
+
+export const addNormalNode = (
+  node: INode,
+  type: string,
+  addNode: (_node: INode | string, _newNodeType?: string) => INode,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void
+) => {
+  const newNode = addNode(node, type)
+  addDataNodes(newNode, dataNodes, setDataNodes)
 }
 
 export const switchAttributeBranch = (

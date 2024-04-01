@@ -2,25 +2,30 @@ import { Icon } from '@iconify/react'
 import { MenuItem, Stack, Typography } from '@mui/material'
 import { useContext } from 'react'
 import { IAddableComponent, NodeContext, useAction } from 'react-flow-builder'
-import { useCampaignStore } from '../store/campagin'
-import { addMultipleBranch } from '../utils/FlowChart'
+import { useCampaignDataStore, useCampaignStore } from '../store/campagin'
+import { addMultipleBranch, addNormalNode } from '../utils/FlowChart'
 
 const nodeTypes = [
   { type: 'channelNode', title: 'Channel Node', icon: <Icon icon='mdi:ads' /> },
-  { type: 'branch', title: 'Branch', icon: <Icon icon='fluent:branch-24-regular' /> }
+  { type: 'branch', title: 'Branch', icon: <Icon icon='fluent:branch-24-regular' /> },
+  { type: 'loop', title: 'Loop', icon: <Icon icon='fluent:branch-24-regular' /> },
+  { type: 'zns', title: 'ZNS', icon: <Icon icon='fluent:branch-24-regular' /> },
+  { type: 'facebook', title: 'Facebook', icon: <Icon icon='fluent:branch-24-regular' /> }
 ]
 const ModalAddNode = (props: IAddableComponent) => {
-  const { add } = props
-  const { addNode } = useAction()
   const node = useContext(NodeContext)
+  const { addNode } = useAction()
   const { nodes, setNodes } = useCampaignStore()
+  const setDataNodes = useCampaignDataStore((state) => state.setDataNodes)
+  const dataNodes = useCampaignDataStore((state) => state.dataNodes)
+
+  console.log('dataNOdes', dataNodes)
 
   const handleAddNode = (type: string) => {
     if (type === 'branch') {
-      addMultipleBranch(nodes, node, addNode)
-      // setNodes(newNodes)
+      addMultipleBranch(nodes, node, addNode, dataNodes, setDataNodes)
     } else {
-      addNode(node, type)
+      addNormalNode(node, type, addNode, dataNodes, setDataNodes)
     }
   }
 

@@ -4,14 +4,14 @@ import { NodeContext } from 'react-flow-builder'
 import { isEqual } from 'lodash'
 import { useCampaignDataStore } from '~/features/campaign/store/campagin'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { UserDataNodeType } from '~/features/campaign/types/Campagin.type'
+import { UserDataNodeType, dataNode } from '~/features/campaign/types/Campagin.type'
 
 const FacebookChannel = React.memo(
   (props: any) => {
     const id = props.node?.id
     const [collapse, setCollapse] = React.useState(true)
     const setDataNode = useCampaignDataStore((state) => state.setDataNode)
-    const node = useCampaignDataStore((state) => state.dataNodes.find((n) => n.id === id))
+    const node = useCampaignDataStore((state) => state.dataNodes.find((n) => n.id === id)?.data.user_data)
     const {
       register,
       handleSubmit,
@@ -19,18 +19,20 @@ const FacebookChannel = React.memo(
       getValues,
       formState: { errors }
     } = useForm<UserDataNodeType>({
-      defaultValues: node?.data,
+      defaultValues: node,
       mode: 'onBlur'
     })
     console.log('rerender facebook')
 
     const handleBlur = (key: string, value: string) => {
       const form = getValues()
-      const newNode = {
+      const newNode: dataNode = {
         id,
         data: {
-          ...form,
-          [key]: value
+          user_data: {
+            ...form,
+            [key]: value
+          }
         }
       }
       setDataNode(newNode)

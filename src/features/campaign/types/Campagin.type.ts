@@ -8,5 +8,8 @@ export interface UserDataNodeType {
 
 export interface dataNode {
   id: string
-  data: UserDataNodeType
+  data: {
+    user_data?: UserDataNodeType
+    tree_nodes?: INode[]
+  }
 }
