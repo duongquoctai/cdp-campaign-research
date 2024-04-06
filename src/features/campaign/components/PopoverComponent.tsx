@@ -1,4 +1,4 @@
-import { IconButton, Popover } from '@mui/material'
+import { Box, ClickAwayListener, IconButton, Popover, Stack } from '@mui/material'
 import React from 'react'
 import { IPopoverComponent } from 'react-flow-builder'
 
@@ -17,7 +17,7 @@ const PopoverComponent = (props: IPopoverComponent) => {
   }
 
   return (
-    <>
+    <Stack>
       <IconButton
         disableFocusRipple
         disableRipple
@@ -37,7 +37,26 @@ const PopoverComponent = (props: IPopoverComponent) => {
       >
         {children}
       </IconButton>
-
+      {/* {visible && (
+        <ClickAwayListener
+          children={
+            <Box
+              position='absolute'
+              sx={{
+                top: 0,
+                right: 0,
+                zIndex: 9999,
+                borderRadius: '8px',
+                border: '1px solid #E5E5E5',
+                bgcolor: 'white'
+              }}
+            >
+              {content}
+            </Box>
+          }
+          onClickAway={handleClose}
+        />
+      )} */}
       <Popover
         open={visible}
         onClose={handleClose}
@@ -52,7 +71,7 @@ const PopoverComponent = (props: IPopoverComponent) => {
       >
         {content}
       </Popover>
-    </>
+    </Stack>
   )
 }
 

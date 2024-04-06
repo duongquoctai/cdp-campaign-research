@@ -74,34 +74,53 @@ export const addEndNodes = (nodes: INode[]) =>
 //   })
 
 export const addChannelInMultipleBranch = (
-  nodes: INode[],
   branchingNode: INode,
   channel: ChannelType,
-  addNode: (_node: INode | string, _newNodeType?: string) => INode
+  addNode: (_node: INode | string, _newNodeType?: string) => INode,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void
 ) => {
   if (branchingNode.children) {
     const conditionNode = addNode(branchingNode, 'condition')
-    const logID = addNode(conditionNode, channel)
+    const channelNode = addNode(conditionNode, channel)
+    addDataNodes(channelNode, dataNodes, setDataNodes)
     useCampaignStore.getState().setForceUpdate()
   }
 }
 
 export const removeChannelInMultipleBranch = (
-  nodes: INode[],
   branchingNode: INode,
   channel: ChannelType,
-  removeNode: (targetNode?: INode | INode[] | string | string[]) => void
+  removeNode: (targetNode?: INode | INode[] | string | string[]) => void,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void
 ) => {
-  if (!branchingNode.children) return nodes
+  if (!branchingNode.children) return
   const conditionNodes = branchingNode.children
   const deletedNode = conditionNodes.find((conditionNode) =>
     conditionNode.children?.some((channelNode) => channelNode.type === channel)
   )
+  if (!deletedNode) return
+  removeDataNodes(deletedNode.children, dataNodes, setDataNodes)
   removeNode(deletedNode)
 }
 
+const removeDataNodes = (
+  nodes: INode[] | undefined,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void
+) => {
+  if (!nodes) return
+  const filtered = dataNodes.filter((dataNode) => {
+    return nodes.some((node) => {
+      return dataNode.id !== node.id
+    })
+  })
+  // const filter = dataNodes.filter((dataNode) => dataNode.id !== node.id)
+  setDataNodes(filtered)
+}
+
 const addDataNodes = (node: INode, dataNodes: dataNode[], setDataNodes: (dataNodes: dataNode[]) => void) => {
-  console.log('====', node.type)
   switch (node.type) {
     case 'branch':
       {
@@ -169,6 +188,24 @@ export const addNormalNode = (
 ) => {
   const newNode = addNode(node, type)
   addDataNodes(newNode, dataNodes, setDataNodes)
+}
+
+export const deleteNode = (
+  node: INode,
+  removeNode: (targetNode?: INode | INode[] | string | string[]) => void,
+  dataNodes: dataNode[],
+  setDataNodes: (dataNodes: dataNode[]) => void,
+  nodes: INode[],
+  setNodes: any
+) => {
+  if (node.type === 'branch' && nodes && setNodes) {
+    const filtered = nodes.filter((n) => n.id !== node.id)
+    setNodes(filtered)
+    removeDataNodes([node], dataNodes, setDataNodes)
+  } else {
+    removeNode(node)
+    removeDataNodes([node], dataNodes, setDataNodes)
+  }
 }
 
 export const switchAttributeBranch = (

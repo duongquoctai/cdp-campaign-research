@@ -5,6 +5,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { MultiChannels } from './MultiChannels'
 import { switchAttributeBranch, switchMultipleBranch } from '~/features/campaign/utils/FlowChart'
 import { useCampaignStore } from '~/features/campaign/store/campagin'
+import ButtonDeleteNode from '../../ButtonDeleteNode'
 
 export const BranchNode = () => {
   // utils
@@ -34,33 +35,32 @@ export const BranchNode = () => {
   }
 
   return (
-    <Card onClick={toggleExpand}>
+    <Card>
       <CardHeader
         title={
           <Stack direction='row' sx={{ alignItems: 'center' }}>
             <Typography>{node.name}</Typography>
-            <Button onClick={() => removeNode()}>Remove</Button>
+            <ButtonDeleteNode />
           </Stack>
         }
       />
-      {isExpand && (
-        <CardContent onClick={(e) => e.stopPropagation()}>
-          <TabContext value={currentTab}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <TabList onChange={handleChange} aria-label='lab API tabs example'>
-                <Tab label='da kenh' value='1' />
-                <Tab label='thuoc tinh' value='2' />
-                <Tab label='chia a/b' value='3' />
-              </TabList>
-            </Box>
-            <TabPanel value='1'>
-              <MultiChannels />
-            </TabPanel>
-            <TabPanel value='2'>thuoc tinh</TabPanel>
-            <TabPanel value='3'>chia a/b</TabPanel>
-          </TabContext>
-        </CardContent>
-      )}
+
+      <CardContent>
+        <TabContext value={currentTab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleChange} aria-label='lab API tabs example'>
+              <Tab label='Đa kênh' value='1' />
+              <Tab label='A/B' value='2' />
+              <Tab label='Thuộc tính' value='3' />
+            </TabList>
+          </Box>
+          <TabPanel value='1'>
+            <MultiChannels />
+          </TabPanel>
+          <TabPanel value='2'>A/B</TabPanel>
+          <TabPanel value='3'>Thuộc tính</TabPanel>
+        </TabContext>
+      </CardContent>
     </Card>
   )
 }

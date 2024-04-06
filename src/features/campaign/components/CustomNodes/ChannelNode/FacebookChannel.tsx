@@ -5,6 +5,7 @@ import { isEqual } from 'lodash'
 import { useCampaignDataStore } from '~/features/campaign/store/campagin'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserDataNodeType, dataNode } from '~/features/campaign/types/Campagin.type'
+import ButtonDeleteNode from '../../ButtonDeleteNode'
 
 const FacebookChannel = React.memo(
   (props: any) => {
@@ -22,7 +23,6 @@ const FacebookChannel = React.memo(
       defaultValues: node,
       mode: 'onBlur'
     })
-    console.log('rerender facebook')
 
     const handleBlur = (key: string, value: string) => {
       const form = getValues()
@@ -42,6 +42,7 @@ const FacebookChannel = React.memo(
       <div>
         <Card>
           <Box sx={{ padding: 4 }}>
+            <ButtonDeleteNode />
             <Box onClick={() => setCollapse(!collapse)}>Facebook</Box>
             <Collapse unmountOnExit in={collapse}>
               <form>

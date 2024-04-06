@@ -8,7 +8,7 @@ import { StartEndNode } from '../components/CustomNodes/StartEndNode'
 import ModalAddNode from '../components/ModalAddNode'
 import PopoverComponent from '../components/PopoverComponent'
 import '../styles/FlowChart.css'
-import { addEndNodes, flatNodes, recursiveUpdateNodes, removeConditionNodes, removeEndNodes } from '../utils/FlowChart'
+import { addEndNodes, flatNodes, recursiveUpdateNodes, removeEndNodes } from '../utils/FlowChart'
 import { useCampaignDataStore, useCampaignStore } from '../store/campagin'
 import FacebookChannel from '../components/CustomNodes/ChannelNode/FacebookChannel'
 import ZNSChannel from '../components/CustomNodes/ChannelNode/ZNSChannel'
@@ -55,8 +55,8 @@ export const registerNodes: IRegisterNode[] = [
     addableComponent: ModalAddNode
   },
   {
-    type: 'zalo',
-    name: 'zalo',
+    type: 'zns',
+    name: 'zns',
     displayComponent: ZNSChannel,
     addableComponent: ModalAddNode,
     initialNodeData: {
@@ -93,7 +93,7 @@ export const registerNodes: IRegisterNode[] = [
   {
     type: 'condition',
     name: 'Condition Node',
-    // displayComponent: ConditionNode,
+    displayComponent: ConditionNode,
     addableComponent: ModalAddNode
     // addableNodeTypes: [],
   },
@@ -120,8 +120,8 @@ export const registerNodes: IRegisterNode[] = [
 
 const NodeForm = () => {
   const { nodes, setNodes } = useCampaignStore()
-  const flattenNodes = flatNodes(nodes)
-  const dataNodes = useCampaignDataStore((state) => state.dataNodes)
+  // const flattenNodes = flatNodes(nodes)
+  // const dataNodes = useCampaignDataStore((state) => state.dataNodes)
   // console.log('flat', flatNodes)
   const handleChange = (nodes: INode[], changeEvent: string, nodeChanged?: INode | undefined) => {
     return
@@ -139,8 +139,6 @@ const NodeForm = () => {
     // }
   }
 
-  console.log('flat', flattenNodes)
-
   // useEffect(() => {
   //   const nodeIds: dataNode[] = flattenNodes.map((node) => {
   //     return {
@@ -157,9 +155,6 @@ const NodeForm = () => {
   //   })
   //   setDataNodes(nodeIds)
   // }, [flattenNodes.length])
-
-  console.log('cay', nodes)
-  console.log('data', dataNodes)
 
   return (
     <>

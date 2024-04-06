@@ -3,22 +3,22 @@ import { useContext, useState } from 'react'
 import { INode, NodeContext, createUuid, useAction } from 'react-flow-builder'
 import { ChannelType } from '~/features/campaign/constants/constants'
 import { registerNodes } from '~/features/campaign/pages/FlowChart'
-import { useCampaignStore } from '~/features/campaign/store/campagin'
+import { useCampaignDataStore, useCampaignStore } from '~/features/campaign/store/campagin'
 import { addChannelInMultipleBranch, removeChannelInMultipleBranch } from '~/features/campaign/utils/FlowChart'
 
 export const MultiChannels = () => {
   const { addNode, removeNode } = useAction()
   const node = useContext(NodeContext)
-  const { nodes, setNodes } = useCampaignStore()
+  const { dataNodes, setDataNodes } = useCampaignDataStore()
   const [selectedChannels, setSelectedChannels] = useState<string[]>([])
 
   const onSelectChannel = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedChannels((state) => {
       if (state.includes(event.target.name)) {
-        removeChannelInMultipleBranch(nodes, node, event.target.name as ChannelType, removeNode)
+        removeChannelInMultipleBranch(node, event.target.name as ChannelType, removeNode, dataNodes, setDataNodes)
         return state.filter((channel) => channel !== event.target.name)
       } else {
-        addChannelInMultipleBranch(nodes, node, event.target.name as ChannelType, addNode)
+        addChannelInMultipleBranch(node, event.target.name as ChannelType, addNode, dataNodes, setDataNodes)
         return [...state, event.target.name]
       }
     })

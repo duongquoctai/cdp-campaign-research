@@ -1,6 +1,6 @@
 export enum ChannelType {
   FACEBOOK = 'facebook',
-  ZALO = 'zalo',
+  ZNS = 'zns',
   EMAIL = 'email',
   SMS = 'sms'
 }
