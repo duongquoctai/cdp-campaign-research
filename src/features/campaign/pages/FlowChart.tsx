@@ -17,6 +17,7 @@ import SMSChannel from '../components/CustomNodes/ChannelNode/SMSChannel'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { dataNode } from '../types/Campagin.type'
 import LoopNode from '../components/CustomNodes/LoopNode'
+import { Box, Button, Collapse, Container, Stack } from '@mui/material'
 
 export const registerNodes: IRegisterNode[] = [
   {
@@ -120,6 +121,7 @@ export const registerNodes: IRegisterNode[] = [
 
 const NodeForm = () => {
   const { nodes, setNodes } = useCampaignStore()
+  const [collapsed, setCollapsed] = useState(false)
   // const flattenNodes = flatNodes(nodes)
   // const dataNodes = useCampaignDataStore((state) => state.dataNodes)
   // console.log('flat', flatNodes)
@@ -157,7 +159,23 @@ const NodeForm = () => {
   // }, [flattenNodes.length])
 
   return (
-    <>
+    <Stack position='relative' height='100%' width='100%'>
+      <Box position='absolute' sx={{ top: 0, left: 20, bgcolor: 'transparent', zIndex: 9 }}>
+        <Button onClick={() => setCollapsed(!collapsed)}>...</Button>
+        <Collapse in={collapsed}>
+          <Box m={4} p={4} borderRadius={8} bgcolor='orange'>
+            <ul style={{ color: 'white', fontWeight: 'bold' }}>
+              <li>
+                Thay đổi toàn bộ code luồng marketing hiện tại (cách lưu trữ data, tính toán các node, ...), <br />
+                cần nhiều thời gian để đổi (ước lượng 2 sprints cho 4 dev).
+              </li>
+              <li>Lưu toàn bộ campaign và node thay vì lưu từng node như hiện tại (Thay đổi cả Backend)</li>
+              <li>Khó khăn trong việc customize (UX/UI), có thể phải fork lib về để đọc code và customize.</li>
+              <li>Là một lib của trung quốc nên không có cộng đồng, khó khăn trong việc tìm kiếm.</li>
+            </ul>
+          </Box>
+        </Collapse>
+      </Box>
       <FlowBuilder
         scrollByDrag
         zoomTool
@@ -168,7 +186,7 @@ const NodeForm = () => {
         showPracticalBranchRemove
         PopoverComponent={PopoverComponent}
       />
-    </>
+    </Stack>
   )
 }
 
