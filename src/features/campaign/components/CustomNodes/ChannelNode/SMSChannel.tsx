@@ -1,28 +1,29 @@
 import { Box, Card, TextField } from '@mui/material'
 import React from 'react'
 import ButtonDeleteNode from '../../ButtonDeleteNode'
+import NodeWrapper from '../../NodeWrapper'
 
 const SMSChannel = () => {
   return (
-    <div>
+    <NodeWrapper>
       <Card>
         <Box sx={{ padding: 4 }}>
           <ButtonDeleteNode />
           <Box>SMS</Box>
           <Box mt={2}>
-            <TextField label='account' />
+            <TextField fullWidth label='account' />
           </Box>
 
           <Box mt={2}>
-            <TextField label='template' />
+            <TextField fullWidth label='template' />
           </Box>
 
           <Box mt={2}>
-            <TextField label='token' />
+            <TextField label='token' fullWidth />
           </Box>
         </Box>
       </Card>
-    </div>
+    </NodeWrapper>
   )
 }
 

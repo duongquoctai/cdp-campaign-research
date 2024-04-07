@@ -6,6 +6,7 @@ import { MultiChannels } from './MultiChannels'
 import { switchAttributeBranch, switchMultipleBranch } from '~/features/campaign/utils/FlowChart'
 import { useCampaignStore } from '~/features/campaign/store/campagin'
 import ButtonDeleteNode from '../../ButtonDeleteNode'
+import NodeWrapper from '../../NodeWrapper'
 
 export const BranchNode = () => {
   // utils
@@ -35,32 +36,34 @@ export const BranchNode = () => {
   }
 
   return (
-    <Card>
-      <CardHeader
-        title={
-          <Stack direction='row' sx={{ alignItems: 'center' }}>
-            <Typography>{node.name}</Typography>
-            <ButtonDeleteNode />
-          </Stack>
-        }
-      />
+    <NodeWrapper>
+      <Card>
+        <CardHeader
+          title={
+            <Stack direction='row' sx={{ alignItems: 'center' }}>
+              <Typography>{node.name}</Typography>
+              <ButtonDeleteNode />
+            </Stack>
+          }
+        />
 
-      <CardContent>
-        <TabContext value={currentTab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChange} aria-label='lab API tabs example'>
-              <Tab label='Đa kênh' value='1' />
-              <Tab label='A/B' value='2' />
-              <Tab label='Thuộc tính' value='3' />
-            </TabList>
-          </Box>
-          <TabPanel value='1'>
-            <MultiChannels />
-          </TabPanel>
-          <TabPanel value='2'>A/B</TabPanel>
-          <TabPanel value='3'>Thuộc tính</TabPanel>
-        </TabContext>
-      </CardContent>
-    </Card>
+        <CardContent>
+          <TabContext value={currentTab}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={handleChange} aria-label='lab API tabs example'>
+                <Tab label='Đa kênh' value='1' />
+                <Tab label='A/B' value='2' />
+                <Tab label='Thuộc tính' value='3' />
+              </TabList>
+            </Box>
+            <TabPanel value='1'>
+              <MultiChannels />
+            </TabPanel>
+            <TabPanel value='2'>A/B</TabPanel>
+            <TabPanel value='3'>Thuộc tính</TabPanel>
+          </TabContext>
+        </CardContent>
+      </Card>
+    </NodeWrapper>
   )
 }

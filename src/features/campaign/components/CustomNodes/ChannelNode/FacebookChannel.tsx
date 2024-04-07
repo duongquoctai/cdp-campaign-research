@@ -6,6 +6,7 @@ import { useCampaignDataStore } from '~/features/campaign/store/campagin'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserDataNodeType, dataNode } from '~/features/campaign/types/Campagin.type'
 import ButtonDeleteNode from '../../ButtonDeleteNode'
+import NodeWrapper from '../../NodeWrapper'
 
 const FacebookChannel = React.memo(
   (props: any) => {
@@ -39,7 +40,7 @@ const FacebookChannel = React.memo(
     }
 
     return (
-      <div>
+      <NodeWrapper>
         <Card>
           <Box sx={{ padding: 4 }}>
             <ButtonDeleteNode />
@@ -48,6 +49,7 @@ const FacebookChannel = React.memo(
               <form>
                 <Box mt={2}>
                   <TextField
+                    fullWidth
                     {...register('account')}
                     onBlur={(e) => handleBlur('account', e.target.value)}
                     label='account'
@@ -56,6 +58,7 @@ const FacebookChannel = React.memo(
 
                 <Box mt={2}>
                   <TextField
+                    fullWidth
                     {...register('template')}
                     onBlur={(e) => handleBlur('template', e.target.value)}
                     label='template'
@@ -63,13 +66,18 @@ const FacebookChannel = React.memo(
                 </Box>
 
                 <Box mt={2}>
-                  <TextField {...register('token')} onBlur={(e) => handleBlur('token', e.target.value)} label='token' />
+                  <TextField
+                    fullWidth
+                    {...register('token')}
+                    onBlur={(e) => handleBlur('token', e.target.value)}
+                    label='token'
+                  />
                 </Box>
               </form>
             </Collapse>
           </Box>
         </Card>
-      </div>
+      </NodeWrapper>
     )
   },
   (a, b) => a?.node.id === b?.node.id
