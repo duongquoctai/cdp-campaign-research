@@ -11,6 +11,7 @@ const ButtonDeleteNode = () => {
   const { nodes, setNodes } = useCampaignStore()
   const { removeNode } = useAction()
   const handleDelete = () => {
+    return
     deleteNode(node, removeNode, dataNodes, setDataNodes, nodes, setNodes)
   }
   return (
